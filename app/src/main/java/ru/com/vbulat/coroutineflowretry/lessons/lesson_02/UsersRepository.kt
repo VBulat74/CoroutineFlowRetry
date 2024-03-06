@@ -1,6 +1,8 @@
 package ru.com.vbulat.coroutineflowretry.lessons.lesson_02
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 object UsersRepository {
 
@@ -11,8 +13,10 @@ object UsersRepository {
         users.add(user)
     }
 
-    suspend fun loadUsers(): List<String> {
-        delay(10)
-        return users.toList()
+    suspend fun loadUsers(): Flow<List<String>>  = flow {
+        while (true){
+            delay(500)
+            emit(users.toList())
+        }
     }
 }
