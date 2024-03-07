@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import ru.com.vbulat.coroutineflowretry.crypto_app.CryptoActivity
 import ru.com.vbulat.coroutineflowretry.databinding.ActivityMainBinding
 import ru.com.vbulat.coroutineflowretry.lessons.lesson_02.UsersActivity
+import ru.com.vbulat.coroutineflowretry.team_score.TeamScoreActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +21,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.buttonCryptoActivity.setOnClickListener {
             startActivity(CryptoActivity.newIntent(this))
+        }
+        binding.teamScoreActivity.setOnClickListener {
+            startActivity(TeamScoreActivity.newIntent(this))
         }
     }
 }
