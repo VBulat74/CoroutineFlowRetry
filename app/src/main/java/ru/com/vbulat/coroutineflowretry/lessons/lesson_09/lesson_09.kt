@@ -1,19 +1,29 @@
-package ru.com.vbulat.coroutineflowretry.lessons.leswson_08
+package ru.com.vbulat.coroutineflowretry.lessons.lesson_09
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 val coroutineScorpe = CoroutineScope(Dispatchers.IO)
 suspend fun main (){
-    val flow = getFlow()
+    val flow = MutableSharedFlow<Int>()
+
+
+    coroutineScorpe.launch {
+        repeat(10){
+            println("Emitted: $it")
+            flow.emit(it)
+            delay(1000)
+        }
+    }
 
     val job1 = coroutineScorpe.launch {
         flow.collect{
-            println(it)
+            println("Got from 1st collector $it")
         }
     }
 
@@ -21,7 +31,7 @@ suspend fun main (){
 
     val job2 = coroutineScorpe.launch {
         flow.collect{
-            println(it)
+            println("Got from 2nd collector $it")
         }
     }
 
