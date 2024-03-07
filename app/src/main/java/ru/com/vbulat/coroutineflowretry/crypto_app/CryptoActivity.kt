@@ -5,7 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import ru.com.vbulat.coroutineflowretry.databinding.ActivityCryptoBinding
 
 class CryptoActivity : AppCompatActivity() {
@@ -20,7 +24,7 @@ class CryptoActivity : AppCompatActivity() {
 
     private val adapter = CryptoAdapter()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setupRecyclerView()
@@ -33,24 +37,30 @@ class CryptoActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.state.observe(this) {
-            when (it) {
-                is State.Initial -> {
-                    binding.progressBarLoading.isVisible = false
+        lifecycleScope.launch {
+            viewModel.state
+                .flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED)
+                .collect {
+                    when (it) {
+                        is State.Initial -> {
+                            binding.progressBarLoading.isVisible = false
+                        }
+
+                        is State.Loading -> {
+                            binding.progressBarLoading.isVisible = true
+                        }
+
+                        is State.Content -> {
+                            binding.progressBarLoading.isVisible = false
+                            adapter.submitList(it.currencyList)
+                        }
+                    }
                 }
-                is State.Loading -> {
-                    binding.progressBarLoading.isVisible = true
-                }
-                is State.Content -> {
-                    binding.progressBarLoading.isVisible = false
-                    adapter.submitList(it.currencyList)
-                }
-            }
         }
     }
 
     companion object {
 
-        fun newIntent(context: Context) = Intent(context, CryptoActivity::class.java)
+        fun newIntent(context : Context) = Intent(context, CryptoActivity::class.java)
     }
 }
